@@ -33,7 +33,8 @@
 // the key and the current time, so it is important that the system clock have
 // at least one-minute accuracy.
 //
-// The keychain is stored unencrypted in the text file $HOME/.2fa.
+// The keychain is stored unencrypted in the text file indicated by the $TWOFA
+// variable, defaulting to $HOME/.2fa.
 //
 // Example
 //
@@ -106,7 +107,11 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	k := readKeychain(filepath.Join(os.Getenv("HOME"), ".2fa"))
+	file := filepath.Join(os.Getenv("HOME"), ".2fa")
+	if p, ok := os.LookupEnv("TWOFA"); ok {
+		file = p
+	}
+	k := readKeychain(file)
 
 	if *flagList {
 		if flag.NArg() != 0 {
